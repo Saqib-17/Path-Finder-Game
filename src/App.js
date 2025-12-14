@@ -264,7 +264,7 @@ function App() {
 
      <footer className="app-footer">
   <div className="footer-content">
-    <p>Pathfinding Algorithms Visualization Game</p>
+    <p>Maze Solving Algorithm Adventure Game</p>
     <div className="copyright">
       © 2024 Md. Shahidul Islam Sakib. All Rights Reserved.
     </div>

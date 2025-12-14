@@ -26,65 +26,18 @@
   font-weight: 600;
 }
 
+
 .control-buttons {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.control-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: #34495e;
-  color: white;
-  min-width: 100px;
-  justify-content: center;
-}
 
-.control-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.control-btn.play {
-  background: linear-gradient(135deg, #00b894, #00a085);
-}
-
-.control-btn.pause {
-  background: linear-gradient(135deg, #fdcb6e, #e17055);
-}
-
-.control-btn.step {
-  background: linear-gradient(135deg, #3498db, #2980b9);
-}
-
-.control-btn.reset {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
-}
-
-.control-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.algorithm-selector,
-.mode-selector {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-}
-
+.control-btn,
 .algorithm-btn,
-.mode-btn {
+.mode-btn,
+.tool-btn {
   padding: 12px 15px;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
@@ -94,22 +47,61 @@
   transition: all 0.3s ease;
   font-size: 14px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: normal;
 }
 
+.control-btn {
+  min-width: 100px;
+}
+
+/* HOVER STATE FOR ALL BUTTONS */
+.control-btn:hover,
 .algorithm-btn:hover,
-.mode-btn:hover {
+.mode-btn:hover,
+.tool-btn:hover {
   background: rgba(52, 152, 219, 0.2);
-  border-color: #3498db;
+  border-color: #3bc9ad;
 }
 
+/* ACTIVE STATE FOR ALL BUTTONS */
+.control-btn.active,
 .algorithm-btn.active,
-.mode-btn.active {
+.mode-btn.active,
+.tool-btn.active,
+.control-btn:active,
+.algorithm-btn:active,
+.mode-btn:active,
+.tool-btn:active {
   background: rgba(0, 184, 148, 0.2);
   border-color: #00b894;
   color: #00b894;
   font-weight: 600;
 }
 
+/* SPECIFIC OVERRIDES FOR CONTROL BUTTONS */
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-btn:disabled:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== ALGORITHM SELECTION BUTTONS ===== */
+.algorithm-selector,
+.mode-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+/* ===== SPEED CONTROL ===== */
 .speed-control {
   padding: 10px 0;
 }
@@ -162,48 +154,14 @@
   font-weight: 600;
 }
 
+/* ===== MAZE TOOLS BUTTONS ===== */
 .maze-tools {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
 }
 
-.tool-btn {
-  padding: 12px 15px;
-  border: none;
-  border-radius: 6px;
-  background: #34495e;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.tool-btn.generate {
-  background: linear-gradient(135deg, #9b59b6, #8e44ad);
-}
-
-.tool-btn.clear {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
-}
-
-.tool-btn.settings {
-  background: linear-gradient(135deg, #3498db, #2980b9);
-}
-
-.tool-btn.help {
-  background: linear-gradient(135deg, #fdcb6e, #e17055);
-}
-
-.tool-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
+/* ===== STATS PREVIEW ===== */
 .stats-preview {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -230,4 +188,21 @@
   font-size: 24px;
   font-weight: bold;
   color: #00b894;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .algorithm-selector,
+  .mode-selector,
+  .maze-tools {
+    grid-template-columns: 1fr;
+  }
+  
+  .control-buttons {
+    flex-direction: column;
+  }
+  
+  .control-btn {
+    min-width: auto;
+  }
 }

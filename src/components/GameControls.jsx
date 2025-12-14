@@ -19,7 +19,7 @@ const GameControls = ({
   // UPDATED: Added DFS to algorithms list
   const algorithms = [
     { id: 'bfs', name: 'Breadth-First Search (BFS)' },
-    { id: 'dfs', name: 'Depth-First Search (DFS)' }  // ADDED
+    { id: 'dfs', name: 'Depth-First Search (DFS)' }  
   ];
 
   const gameModes = [
