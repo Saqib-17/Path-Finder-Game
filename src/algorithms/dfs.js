@@ -1,4 +1,4 @@
-export const bfs = (maze, start, end) => {
+export const dfs = (maze, start, end) => {
   const rows = maze.length;
   const cols = maze[0].length;
   
@@ -8,7 +8,7 @@ export const bfs = (maze, start, end) => {
   }
   
   const visited = new Set();
-  const queue = [{ 
+  const stack = [{ 
     position: start, 
     path: [start], 
     distance: 0 
@@ -18,8 +18,8 @@ export const bfs = (maze, start, end) => {
   
   const steps = [];
   
-  while (queue.length > 0) {
-    const current = queue.shift();
+  while (stack.length > 0) {
+    const current = stack.pop();
     
     // Record step - Convert visited Set to array of [row, col] pairs
     const visitedArray = Array.from(visited).map(key => {
@@ -28,10 +28,10 @@ export const bfs = (maze, start, end) => {
     });
     
     steps.push({
-      visited: visitedArray,  // Array of [row, col] pairs
+      visited: visitedArray,
       path: [...current.path],
       current: current.position,
-      queue: queue.map(node => node.position)
+      stack: stack.map(node => node.position)
     });
     
     // Check if reached destination
@@ -41,18 +41,18 @@ export const bfs = (maze, start, end) => {
         visited: visitedArray,
         path: [...current.path],
         current: current.position,
-        queue: [],
+        stack: [],
         isComplete: true
       });
       return steps;
     }
     
-    // Get valid neighbors
+    // Get valid neighbors (order: right, down, left, up for DFS)
     const directions = [
-      { dr: -1, dc: 0 }, // Up
-      { dr: 1, dc: 0 },  // Down
-      { dr: 0, dc: -1 }, // Left
-      { dr: 0, dc: 1 }   // Right
+      { dr: 0, dc: 1 },   // Right
+      { dr: 1, dc: 0 },   // Down
+      { dr: 0, dc: -1 },  // Left
+      { dr: -1, dc: 0 }   // Up
     ];
     
     for (const dir of directions) {
@@ -66,7 +66,7 @@ export const bfs = (maze, start, end) => {
         const key = `${newRow},${newCol}`;
         if (!visited.has(key)) {
           visited.add(key);
-          queue.push({
+          stack.push({
             position: { row: newRow, col: newCol },
             path: [...current.path, { row: newRow, col: newCol }],
             distance: current.distance + 1

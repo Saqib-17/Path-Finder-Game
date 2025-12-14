@@ -3,11 +3,18 @@ import MazeGrid from './components/mazeGrid';
 import GameControls from './components/GameControls';
 import { generateMaze, createEmptyMaze } from './game/MazeGenerator';
 import { bfs } from './algorithms/bfs';
+import { dfs } from './algorithms/dfs';
 import './App.css';
 
 function App() {
-  // Game state - Initialize with empty maze structure
-  const [maze, setMaze] = useState(() => createEmptyMaze(15, 15));
+
+  const [maze, setMaze] = useState(() => {
+    const initialMaze = createEmptyMaze(15, 15);
+    initialMaze[1][1] = 0;
+    initialMaze[13][13] = 0; 
+    return initialMaze;
+  });
+  
   const [start, setStart] = useState({ row: 1, col: 1 });
   const [end, setEnd] = useState({ row: 13, col: 13 });
   const [currentStep, setCurrentStep] = useState(null);
@@ -21,12 +28,12 @@ function App() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize maze - FIXED VERSION
+  // Initialize maze - Run once on component mount
   useEffect(() => {
     const initializeMaze = () => {
       try {
-        const initialMaze = generateMaze(15, 15);
-        setMaze(initialMaze);
+        const newMaze = generateMaze(15, 15);
+        setMaze(newMaze);
         setStart({ row: 1, col: 1 });
         setEnd({ row: 13, col: 13 });
         setIsLoading(false);
@@ -34,8 +41,8 @@ function App() {
         console.error('Failed to generate maze:', error);
         // Fallback to empty maze
         const emptyMaze = createEmptyMaze(15, 15);
-        emptyMaze[1][1] = 0; // Start
-        emptyMaze[13][13] = 0; // End
+        emptyMaze[1][1] = 0;
+        emptyMaze[13][13] = 0;
         setMaze(emptyMaze);
         setIsLoading(false);
       }
@@ -64,7 +71,6 @@ function App() {
 
   // Handle cell click for drawing
   const handleCellClick = useCallback((row, col) => {
-    // Don't allow drawing on start or end points
     if ((row === start.row && col === start.col) || 
         (row === end.row && col === end.col)) {
       return;
@@ -100,10 +106,13 @@ function App() {
   const handlePlayPause = () => {
     if (!isPlaying) {
       const steps = runAlgorithm();
-      setAlgorithmSteps(steps);
-      setCurrentStepIndex(0);
-      if (steps.length > 0) {
+      if (steps && steps.length > 0) {
+        setAlgorithmSteps(steps);
+        setCurrentStepIndex(0);
         setCurrentStep(steps[0]);
+      } else {
+        alert('No path found or invalid maze!');
+        return;
       }
     }
     setIsPlaying(!isPlaying);
@@ -113,7 +122,11 @@ function App() {
   const handleStepForward = () => {
     if (algorithmSteps.length === 0) {
       const steps = runAlgorithm();
-      setAlgorithmSteps(steps);
+      if (steps && steps.length > 0) {
+        setAlgorithmSteps(steps);
+      } else {
+        return;
+      }
     }
     
     if (currentStepIndex < algorithmSteps.length - 1) {
@@ -132,13 +145,23 @@ function App() {
 
   // Run selected algorithm
   const runAlgorithm = () => {
-    if (!maze || maze.length === 0) return [];
+    if (!maze || maze.length === 0) {
+      console.error('Maze is not ready');
+      return [];
+    }
     
-    switch (algorithm) {
-      case 'bfs':
-        return bfs(maze, start, end) || [];
-      default:
-        return [];
+    try {
+      switch (algorithm) {
+        case 'bfs':
+          return bfs(maze, start, end) || [];
+        case 'dfs':
+          return dfs(maze, start, end) || [];
+        default:
+          return [];
+      }
+    } catch (error) {
+      console.error('Algorithm error:', error);
+      return [];
     }
   };
 
@@ -154,8 +177,8 @@ function App() {
   // Clear maze
   const handleClearMaze = () => {
     const emptyMaze = createEmptyMaze(15, 15);
-    emptyMaze[1][1] = 0; // Clear start
-    emptyMaze[13][13] = 0; // Clear end
+    emptyMaze[1][1] = 0;
+    emptyMaze[13][13] = 0;
     setMaze(emptyMaze);
     setStart({ row: 1, col: 1 });
     setEnd({ row: 13, col: 13 });
@@ -173,19 +196,7 @@ function App() {
     return (
       <div className="loading-screen">
         <div className="loading-spinner"></div>
-        <h2>Generating Maze...</h2>
-      </div>
-    );
-  }
-
-  // Check if maze is valid
-  if (!maze || maze.length === 0) {
-    return (
-      <div className="error-screen">
-        <h2>Error: Maze not generated properly</h2>
-        <button onClick={handleGenerateMaze} className="retry-btn">
-          Generate New Maze
-        </button>
+        <h2>Initializing Maze Game...</h2>
       </div>
     );
   }
@@ -251,14 +262,14 @@ function App() {
         </aside>
       </div>
 
-      <footer className="app-footer">
-        <p>Pathfinding Algorithms Visualization Game | Made with ❤️ for Algorithm Course</p>
-        <div className="footer-links">
-          <span>Algorithms: BFS • DFS • Dijkstra • A*</span>
-          <span> | </span>
-          <span>Game Modes: Race • Time Trial • Puzzle • Creative</span>
-        </div>
-      </footer>
+     <footer className="app-footer">
+  <div className="footer-content">
+    <p>Pathfinding Algorithms Visualization Game</p>
+    <div className="copyright">
+      © 2024 Md. Shahidul Islam Sakib. All Rights Reserved.
+    </div>
+  </div>
+</footer>
     </div>
   );
 }

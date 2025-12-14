@@ -2,11 +2,11 @@ import React, { useRef, useEffect } from 'react';
 import './MazeGrid.css';
 
 const MazeGrid = ({ 
-  maze = [],  // Default empty array
+  maze, 
   currentStep, 
   onCellClick, 
-  start = { row: 1, col: 1 }, 
-  end = { row: 1, col: 1 }, 
+  start, 
+  end, 
   isDrawing,
   cellSize = 30 
 }) => {
@@ -14,9 +14,8 @@ const MazeGrid = ({
   const isMouseDown = useRef(false);
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    
     const ctx = canvas.getContext('2d');
+    
     if (!ctx) return;
     
     // Clear canvas
@@ -37,17 +36,27 @@ const MazeGrid = ({
     }
     
   }, [maze, currentStep, start, end]);
-  // Safety check
-  if (!maze || maze.length === 0) {
+ //show loading if maze is undefined or null
+  if (!maze || !Array.isArray(maze) || maze.length === 0) {
     return (
-      <div className="maze-error">
-        <p>No maze data available. Please generate a maze.</p>
+      <div className="maze-loading">
+        <div className="loading-spinner-small"></div>
+        <p>Loading maze grid...</p>
       </div>
     );
   }
 
   const rows = maze.length;
   const cols = maze[0] ? maze[0].length : 0;
+
+  // Additional check for valid dimensions
+  if (rows === 0 || cols === 0) {
+    return (
+      <div className="maze-error">
+        <p>Invalid maze dimensions</p>
+      </div>
+    );
+  }
 
 
 
@@ -74,11 +83,10 @@ const MazeGrid = ({
   const drawWalls = (ctx) => {
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
-        if (maze[i] && maze[i][j] === 1) { // Wall
+        if (maze[i][j] === 1) { 
           ctx.fillStyle = '#2c3e50';
           ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
           
-          // Add texture to walls
           ctx.fillStyle = '#34495e';
           ctx.fillRect(j * cellSize + 2, i * cellSize + 2, cellSize - 4, cellSize - 4);
         } else { // Path
@@ -125,22 +133,33 @@ const MazeGrid = ({
   };
 
   const drawAlgorithmSteps = (ctx, step) => {
-    if (!step) return;
-    
-    // Draw visited cells
-    if (step.visited) {
-      step.visited.forEach(([row, col]) => {
-        ctx.fillStyle = 'rgba(52, 152, 219, 0.3)';
+    // Draw visited cells - Fixed to handle array format
+    if (step.visited && Array.isArray(step.visited)) {
+      step.visited.forEach(cell => {
+        let row, col;
+        
+        if (Array.isArray(cell)) {
+          [row, col] = cell;
+        } else if (cell.row !== undefined && cell.col !== undefined) {
+          row = cell.row;
+          col = cell.col;
+        } else {
+          return; 
+        }
+        
+        ctx.fillStyle = 'rgba(52, 152, 219, 0.4)';
         ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
       });
     }
     
     // Draw current path
-    if (step.path) {
+    if (step.path && Array.isArray(step.path)) {
       step.path.forEach((pos, index) => {
-        if (!pos) return;
+        if (!pos || pos.row === undefined || pos.col === undefined) return;
         
         const alpha = index === step.path.length - 1 ? 1 : 0.5 + (index / step.path.length) * 0.5;
+        
+        // Draw path circle
         ctx.fillStyle = `rgba(231, 76, 60, ${alpha})`;
         ctx.beginPath();
         ctx.arc(
@@ -152,7 +171,7 @@ const MazeGrid = ({
         );
         ctx.fill();
         
-        // Draw path lines
+        // Draw path lines between consecutive points
         if (index > 0 && step.path[index - 1]) {
           const prev = step.path[index - 1];
           ctx.strokeStyle = `rgba(231, 76, 60, ${alpha})`;
@@ -172,7 +191,7 @@ const MazeGrid = ({
     }
     
     // Highlight current cell
-    if (step.current) {
+    if (step.current && step.current.row !== undefined && step.current.col !== undefined) {
       ctx.fillStyle = '#f1c40f';
       ctx.beginPath();
       ctx.arc(
@@ -183,6 +202,35 @@ const MazeGrid = ({
         Math.PI * 2
       );
       ctx.fill();
+      
+      // Add "current" label
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 10px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(
+        'C',
+        step.current.col * cellSize + cellSize/2,
+        step.current.row * cellSize + cellSize/2
+      );
+    }
+    
+    // Show completion indicator
+    if (step.isComplete) {
+      ctx.fillStyle = '#00b894';
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✓', end.col * cellSize + cellSize/2, end.row * cellSize + cellSize/2);
+    }
+    
+    // Show no path indicator
+    if (step.noPath) {
+      ctx.fillStyle = '#e74c3c';
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✗', end.col * cellSize + cellSize/2, end.row * cellSize + cellSize/2);
     }
   };
 
@@ -205,8 +253,6 @@ const MazeGrid = ({
     if (!onCellClick) return;
     
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    
     const rect = canvas.getBoundingClientRect();
     
     const x = e.clientX - rect.left;
@@ -244,15 +290,19 @@ const MazeGrid = ({
           </div>
           <div className="legend-item">
             <div className="color-box visited"></div>
-            <span>Visited Cells</span>
+            <span>Visited Cells (Blue)</span>
           </div>
           <div className="legend-item">
             <div className="color-box path"></div>
-            <span>Current Path</span>
+            <span>Current Path (Red)</span>
           </div>
           <div className="legend-item">
             <div className="color-box wall"></div>
             <span>Walls/Obstacles</span>
+          </div>
+          <div className="legend-item">
+            <div className="color-box" style={{ background: '#f1c40f' }}></div>
+            <span>Current Cell</span>
           </div>
         </div>
       </div>

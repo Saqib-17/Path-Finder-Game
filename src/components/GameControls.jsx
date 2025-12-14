@@ -16,17 +16,13 @@ const GameControls = ({
   onGenerateMaze,
   onClearMaze
 }) => {
+  // UPDATED: Added DFS to algorithms list
   const algorithms = [
     { id: 'bfs', name: 'Breadth-First Search (BFS)' },
-    { id: 'dfs', name: 'Depth-First Search (DFS)' },
-    { id: 'dijkstra', name: "Dijkstra's Algorithm" },
-    { id: 'astar', name: 'A* Search Algorithm' }
+    { id: 'dfs', name: 'Depth-First Search (DFS)' }  // ADDED
   ];
 
   const gameModes = [
-    { id: 'race', name: 'Algorithm Race' },
-    { id: 'time-trial', name: 'Time Trial' },
-    { id: 'puzzle', name: 'Puzzle Mode' },
     { id: 'creative', name: 'Creative Mode' }
   ];
 
