@@ -4,6 +4,7 @@ import GameControls from './components/GameControls';
 import { generateMaze, createEmptyMaze } from './game/MazeGenerator';
 import { bfs } from './algorithms/bfs';
 import { dfs } from './algorithms/dfs';
+import { dijkstra } from './algorithms/dijkstra';
 import './App.css';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
+  
   // Initialize maze - Run once on component mount
   useEffect(() => {
     const initializeMaze = () => {
@@ -156,6 +158,8 @@ function App() {
           return bfs(maze, start, end) || [];
         case 'dfs':
           return dfs(maze, start, end) || [];
+        case 'dijkstra':
+        return dijkstra(maze, start, end) || [];  
         default:
           return [];
       }

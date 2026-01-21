@@ -16,11 +16,12 @@ const GameControls = ({
   onGenerateMaze,
   onClearMaze
 }) => {
-  // UPDATED: Added DFS to algorithms list
   const algorithms = [
-    { id: 'bfs', name: 'Breadth-First Search (BFS)' },
-    { id: 'dfs', name: 'Depth-First Search (DFS)' }  
-  ];
+  { id: 'bfs', name: 'Breadth-First Search (BFS)' },
+  { id: 'dfs', name: 'Depth-First Search (DFS)' },
+  { id: 'dijkstra', name: "Dijkstra's Algorithm" }
+];
+
 
   const gameModes = [
     { id: 'creative', name: 'Creative Mode' }
@@ -138,15 +139,7 @@ const GameControls = ({
             Clear Maze
           </button>
           
-          <button className="tool-btn settings">
-            <FaCog />
-            Settings
-          </button>
-          
-          <button className="tool-btn help">
-            <FaQuestionCircle />
-            Help
-          </button>
+         
         </div>
       </div>
 
