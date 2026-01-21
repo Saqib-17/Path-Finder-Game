@@ -28,7 +28,7 @@ export const bfs = (maze, start, end) => {
     });
     
     steps.push({
-      visited: visitedArray,  // Array of [row, col] pairs
+      visited: visitedArray, 
       path: [...current.path],
       current: current.position,
       queue: queue.map(node => node.position)

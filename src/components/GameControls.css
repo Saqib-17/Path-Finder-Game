@@ -93,7 +93,7 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* ===== ALGORITHM SELECTION BUTTONS ===== */
+/*  ALGORITHM SELECTION BUTTONS */
 .algorithm-selector,
 .mode-selector {
   display: grid;
@@ -101,7 +101,7 @@
   gap: 10px;
 }
 
-/* ===== SPEED CONTROL ===== */
+/*  SPEED CONTROL  */
 .speed-control {
   padding: 10px 0;
 }
@@ -154,14 +154,14 @@
   font-weight: 600;
 }
 
-/* ===== MAZE TOOLS BUTTONS ===== */
+/* MAZE TOOLS BUTTONS  */
 .maze-tools {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
 }
 
-/* ===== STATS PREVIEW ===== */
+/* STATS PREVIEW  */
 .stats-preview {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -190,7 +190,7 @@
   color: #00b894;
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
+/* RESPONSIVE DESIGN  */
 @media (max-width: 768px) {
   .algorithm-selector,
   .mode-selector,

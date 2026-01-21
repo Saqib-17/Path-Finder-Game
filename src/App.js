@@ -29,7 +29,10 @@ function App() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  
+  const [visitedCount, setVisitedCount] = useState(0);
+const [pathLength, setPathLength] = useState(0);
+const [elapsedTime, setElapsedTime] = useState(0);
+
   // Initialize maze - Run once on component mount
   useEffect(() => {
     const initializeMaze = () => {
@@ -70,6 +73,30 @@ function App() {
     
     return () => clearInterval(interval);
   }, [isPlaying, algorithmSteps, currentStepIndex, speed]);
+useEffect(() => {
+  if (!currentStep) return;
+
+  // Update visited cells count
+  if (currentStep.visited && Array.isArray(currentStep.visited)) {
+    setVisitedCount(currentStep.visited.length);
+  }
+
+  // Update path length
+  if (currentStep.path && Array.isArray(currentStep.path)) {
+    setPathLength(currentStep.path.length);
+  }
+}, [currentStep]);
+
+useEffect(() => {
+  let timer;
+  if (isPlaying) {
+    timer = setInterval(() => {
+      setElapsedTime(prev => prev + speed / 1000); // increment based on speed
+    }, speed);
+  }
+
+  return () => clearInterval(timer);
+}, [isPlaying, speed]);
 
   // Handle cell click for drawing
   const handleCellClick = useCallback((row, col) => {
@@ -138,12 +165,16 @@ function App() {
   };
 
   // Reset game
-  const handleReset = () => {
-    setIsPlaying(false);
-    setCurrentStep(null);
-    setAlgorithmSteps([]);
-    setCurrentStepIndex(0);
-  };
+const handleReset = () => {
+  setIsPlaying(false);
+  setCurrentStep(null);
+  setAlgorithmSteps([]);
+  setCurrentStepIndex(0);
+  setVisitedCount(0); 
+  setPathLength(0);     
+  setElapsedTime(0);    
+};
+
 
   // Run selected algorithm
   const runAlgorithm = () => {
@@ -170,24 +201,24 @@ function App() {
   };
 
   // Generate new maze
-  const handleGenerateMaze = () => {
-    const newMaze = generateMaze(15, 15);
-    setMaze(newMaze);
-    setStart({ row: 1, col: 1 });
-    setEnd({ row: 13, col: 13 });
-    handleReset();
-  };
+const handleGenerateMaze = () => {
+  const newMaze = generateMaze(15, 15);
+  setMaze(newMaze);
+  setStart({ row: 1, col: 1 });
+  setEnd({ row: 13, col: 13 });
+  handleReset(); // reset stats
+};
 
   // Clear maze
-  const handleClearMaze = () => {
-    const emptyMaze = createEmptyMaze(15, 15);
-    emptyMaze[1][1] = 0;
-    emptyMaze[13][13] = 0;
-    setMaze(emptyMaze);
-    setStart({ row: 1, col: 1 });
-    setEnd({ row: 13, col: 13 });
-    handleReset();
-  };
+const handleClearMaze = () => {
+  const emptyMaze = createEmptyMaze(15, 15);
+  emptyMaze[1][1] = 0;
+  emptyMaze[13][13] = 0;
+  setMaze(emptyMaze);
+  setStart({ row: 1, col: 1 });
+  setEnd({ row: 13, col: 13 });
+  handleReset(); // reset stats
+};
 
   // Change draw mode
   const handleDrawModeChange = (mode) => {
@@ -262,6 +293,9 @@ function App() {
             onGameModeChange={setGameMode}
             onGenerateMaze={handleGenerateMaze}
             onClearMaze={handleClearMaze}
+            visitedCount={visitedCount}
+  pathLength={pathLength}
+  elapsedTime={elapsedTime}
           />
         </aside>
       </div>
