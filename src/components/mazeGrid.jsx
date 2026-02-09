@@ -12,6 +12,7 @@ const MazeGrid = ({
 }) => {
   const canvasRef = useRef(null);
   const isMouseDown = useRef(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');

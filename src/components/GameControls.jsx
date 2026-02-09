@@ -4,8 +4,6 @@ import {
   FaPause,
   FaStepForward,
   FaRedo,
-  FaCog,
-  FaQuestionCircle,
 } from "react-icons/fa";
 import "./GameControls.css";
 
